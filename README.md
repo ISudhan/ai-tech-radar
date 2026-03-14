@@ -161,8 +161,6 @@ TELEGRAM_CHAT_ID=your_telegram_chat_or_channel_id_here
 GITHUB_TOKEN=your_github_personal_access_token_here
 ```
 
-> ⚠️ Never commit your `.env` file. It is already listed in `.gitignore`.
-
 For GitHub Actions, add these as **Repository Secrets** under `Settings → Secrets and variables → Actions`.
 
 ---
