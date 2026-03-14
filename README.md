@@ -283,6 +283,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 Built with ☕ and curiosity about the AI frontier.
 
-**[⭐ Star this repo](https://github.com/your-username/ai-tech-radar)** if you find it useful!
+**[⭐ Star this repo](https://github.com/ISudhan/ai-tech-radar)** if you find it useful!
 
 </div>
