@@ -1,6 +1,39 @@
-def main():
-    print("Hello from ai-tech-radar!")
+import os
+from datetime import datetime
+
+from collectors.github_trending import get_repos
+from collectors.arxiv import get_papers
+from collectors.ai_news import get_news
+
+from ai.summarizer import summarize
+from delivery.telegram import send_message
+
+
+def save_digest(text):
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+
+    os.makedirs("data/digests", exist_ok=True)
+
+    file_path = f"data/digests/{today}.md"
+
+    with open(file_path, "w") as f:
+        f.write(text)
+
+
+def run():
+
+    data = {
+        "news": get_news(),
+        "papers": get_papers(),
+        "repos": get_repos()
+    }
+
+    summary = summarize(data)
+
+    save_digest(summary)
+
+    send_message(summary)
 
 
 if __name__ == "__main__":
-    main()
+    run()
