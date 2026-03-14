@@ -28,11 +28,30 @@ def run():
         "repos": get_repos()
     }
 
-    summary = summarize(data)
+    try:
+        summary = summarize(data)
+    except Exception as e:
+        print("Gemini failed, using fallback summary")
+
+        summary = f"""
+AI Tech Radar
+
+News:
+{data['news']}
+
+Papers:
+{data['papers']}
+
+Repos:
+{data['repos']}
+"""
 
     save_digest(summary)
 
-    send_message(summary)
+    try:
+        send_message(summary)
+    except Exception as e:
+        print("Telegram send failed")
 
 
 if __name__ == "__main__":
