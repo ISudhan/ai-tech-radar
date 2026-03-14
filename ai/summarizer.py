@@ -10,25 +10,33 @@ client = genai.Client(
 )
 
 def summarize(data):
+    try:
+        prompt = f"""Summarize the following AI tech updates into a concise radar report:
 
-    prompt = f"""
-Create a short AI developer briefing.
-
-Top AI News:
+News:
 {data['news']}
 
-Important ML Papers:
+Papers:
 {data['papers']}
 
-Trending GitHub Repositories:
+Repos:
 {data['repos']}
-
-Use bullet points.
 """
+        response = client.models.generate_content(
+            model="models/gemini-2.5-flash",
+            contents=prompt
+        )
+        return response.text
+    except Exception:
+        return f"""
+AI Tech Radar
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+News:
+{data['news']}
 
-    return response.text
+Papers:
+{data['papers']}
+
+Repos:
+{data['repos']}
+"""
