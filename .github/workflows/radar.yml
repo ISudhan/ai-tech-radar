@@ -15,16 +15,19 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install uv
         run: curl -Ls https://astral.sh/uv/install.sh | sh
 
+      - name: Add uv to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
       - name: Install dependencies
-        run: ~/.cargo/bin/uv sync
+        run: uv sync
 
       - name: Run bot
-        run: ~/.cargo/bin/uv run python main.py
+        run: uv run python main.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
