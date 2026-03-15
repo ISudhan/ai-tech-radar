@@ -1,57 +1,23 @@
-import os
-from datetime import datetime
-
-from collectors.github_trending import get_repos
-from collectors.arxiv import get_papers
-from collectors.ai_news import get_news
-
-from ai.summarizer import summarize
+from ai.digest import build_digest
 from delivery.telegram import send_message
 
-
-def save_digest(text):
-    today = datetime.utcnow().strftime("%Y-%m-%d")
-
-    os.makedirs("data/digests", exist_ok=True)
-
-    file_path = f"data/digests/{today}.md"
-
-    with open(file_path, "w") as f:
-        f.write(text)
+from storage.ingest_arxiv import ingest as ingest_arxiv
+from storage.ingest_news import ingest as ingest_news
+from storage.ingest_repos import ingest as ingest_repos
 
 
 def run():
 
-    data = {
-        "news": get_news(),
-        "papers": get_papers(),
-        "repos": get_repos()
-    }
+    # collect data
+    ingest_arxiv()
+    ingest_news()
+    ingest_repos()
 
-    try:
-        summary = summarize(data)
-    except Exception as e:
-        print("Gemini failed, using fallback summary")
+    # generate intelligence digest
+    digest = build_digest()
 
-        summary = f"""
-AI Tech Radar
-
-News:
-{data['news']}
-
-Papers:
-{data['papers']}
-
-Repos:
-{data['repos']}
-"""
-
-    save_digest(summary)
-
-    try:
-        send_message(summary)
-    except Exception as e:
-        print("Telegram send failed")
+    # send message
+    send_message(digest)
 
 
 if __name__ == "__main__":

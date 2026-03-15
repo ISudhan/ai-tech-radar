@@ -1,288 +1,305 @@
-# 🤖 AI Tech Radar
+# AI Tech Radar
 
-> **Your automated AI intelligence briefing — delivered twice daily, straight to Telegram.**
+**AI Tech Radar** is an automated intelligence pipeline that monitors the global AI ecosystem by collecting data from research papers, technology news, and GitHub repositories.
 
-AI Tech Radar is a fully automated intelligence pipeline that monitors the AI/ML landscape in real time. It collects the latest research papers from ArXiv, trending AI news from RSS feeds, and hot GitHub repositories — then uses **Gemini AI** to synthesize everything into a clean, structured daily digest delivered via **Telegram Bot**, orchestrated entirely by **GitHub Actions**.
+The system analyzes this data to detect emerging trends and automatically generates daily AI intelligence briefings.
 
----
-
-## 📸 Example Telegram Output
-```
-📡 AI Tech Radar — Daily Brief
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📰 Top AI News
-- OpenAI announces GPT-5 with enhanced reasoning capabilities
-- Google DeepMind releases new reinforcement learning benchmark
-- Meta open-sources next-gen image generation model
-
-📄 Important ML Papers (ArXiv)
-- "Scaling Laws for Reward Model Overoptimization" — Gao et al.
-- "Efficient Long-Context Transformers via Sparse Attention" — MIT CSAIL
-- "LLM-as-Judge: Aligning AI Evaluation with Human Preferences"
-
-🔥 Trending GitHub Repositories
-- huggingface/transformers ⭐ 128k
-- facebookresearch/llama ⭐ 54k
-- run-llama/llama_index ⭐ 33k
-
-🕐 Generated: 2025-01-15 08:00 UTC
-```
+The goal of this project is to demonstrate how a modern **data pipeline + analytics + AI summarization system** can be built using Python.
 
 ---
 
-## 🏗️ Architecture
+# Overview
+
+AI Tech Radar continuously tracks:
+
+* Latest AI research papers
+* Important AI news articles
+* Trending AI GitHub repositories
+* Repository growth and popularity
+
+The system processes these signals to produce a **daily intelligence report** that highlights the most important developments in AI.
+
+---
+
+# System Architecture
+
 ```
-┌─────────────────────────────────────────┐
-│           Data Sources                  │
-│  📰 RSS Feeds   📄 ArXiv   🐙 GitHub API │
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────┐
-│             Collectors                  │
-│  ai_news.py │ arxiv.py │ github_trending│
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────┐
-│         Gemini AI Summarizer            │
-│         summarizer.py                   │
-│  • Filters noise                        │
-│  • Ranks by relevance                   │
-│  • Generates structured digest          │
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────┐
-│           Delivery Layer                │
-│           telegram.py                   │
-│  → Sends formatted brief to channel    │
-│  → Saves digest to data/digests/        │
-└────────────────┬────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────┐
-│         GitHub Actions (CRON)           │
-│         radar.yml                       │
-│  ⏰ Runs automatically — twice daily    │
-└─────────────────────────────────────────┘
+Data Sources
+│
+├── arXiv API (AI research papers)
+├── AI News RSS feeds
+└── GitHub API (AI repositories)
+        │
+        ▼
+Collectors Layer
+│
+├── collectors/arxiv.py
+├── collectors/news.py
+└── collectors/github_repos.py
+        │
+        ▼
+Storage Layer
+(PostgreSQL database)
+│
+├── papers
+├── news
+├── repositories
+├── repo_stats
+└── digests
+        │
+        ▼
+Trend Analysis Engine
+│
+├── ranking/repos.py
+├── ranking/papers.py
+├── ranking/tools.py
+└── ranking/trends.py
+        │
+        ▼
+Digest Generator
+│
+└── ai/digest.py
+        │
+        ▼
+Delivery System
+│
+└── Telegram Bot
 ```
 
----
-
-## ✨ Features
-
-| Feature | Description |
-|---|---|
-| 🔄 **Fully Automated** | Runs on a CRON schedule via GitHub Actions — zero manual effort |
-| 🧠 **AI-Powered Summaries** | Gemini AI distills raw data into concise, human-readable briefings |
-| 📄 **ArXiv Research Monitoring** | Tracks the latest ML/AI research papers as they drop |
-| 📰 **AI News Aggregation** | Pulls from curated RSS feeds covering the AI industry |
-| 🔥 **GitHub Trending Tracker** | Surfaces the hottest AI/ML repositories in real time |
-| 📬 **Telegram Delivery** | Pushes formatted digests directly to your Telegram channel or group |
-| 🗂️ **Historical Digest Archive** | Every briefing is saved as a dated Markdown file in the repo |
-| 🔒 **Secrets-Safe CI/CD** | All credentials managed via GitHub Secrets — never hardcoded |
+The entire system runs automatically using **GitHub Actions**.
 
 ---
 
-## 🛠️ Tech Stack
+# Features
 
-| Layer | Technology |
-|---|---|
-| **Language** | Python 3.11+ |
-| **AI Summarization** | Google Gemini API |
-| **Messaging** | Telegram Bot API |
-| **Automation** | GitHub Actions |
-| **Data Collection** | RSS Feeds, GitHub REST API |
-| **Package Manager** | `uv` (ultra-fast Python package manager) |
+### Automated Data Collection
 
----
+The system collects AI ecosystem signals from multiple sources:
 
-## ⚙️ How It Works
-
-1. **Collect** — Three independent collectors run in parallel:
-   - `collectors/ai_news.py` fetches AI headlines from RSS feeds
-   - `collectors/arxiv.py` pulls the latest ML papers from ArXiv
-   - `collectors/github_trending.py` queries GitHub for trending AI repositories
-
-2. **Summarize** — Raw collected data is passed to `ai/summarizer.py`, which calls the Gemini API to rank, filter, and synthesize content into a structured briefing
-
-3. **Deliver** — `delivery/telegram.py` formats the digest and pushes it to your configured Telegram channel
-
-4. **Archive** — The digest is saved to `data/digests/YYYY-MM-DD.md` and committed to the repository
-
-5. **Automate** — `.github/workflows/radar.yml` triggers the entire pipeline twice daily via CRON
+* **arXiv API** – Latest AI and machine learning papers
+* **AI News RSS** – Technology news related to AI
+* **GitHub API** – Trending AI repositories
 
 ---
 
-## 🚀 Installation
+### Historical Data Tracking
 
-### Prerequisites
+All collected data is stored in PostgreSQL.
 
-- Python 3.11+
-- [`uv`](https://github.com/astral-sh/uv) package manager
-- A [Gemini API key](https://aistudio.google.com/)
-- A [Telegram Bot token](https://core.telegram.org/bots/tutorial) + channel/chat ID
+This enables:
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/ai-tech-radar.git
+* Repository star growth tracking
+* Research activity monitoring
+* Long-term trend analysis
+
+---
+
+### Trend Detection
+
+The trend engine analyzes stored data to detect:
+
+* Fastest growing AI repositories
+* Most active research fields
+* Popular AI tools
+
+---
+
+### Daily Intelligence Briefing
+
+The system generates a structured intelligence report containing:
+
+* Fastest growing AI repositories
+* Top research topics
+* Most popular AI tools
+* Important AI news
+
+Example output:
+
+```
+AI Tech Radar — Daily Intelligence Brief
+
+Fastest Growing AI Repositories
+• huggingface/transformers (+520 stars)
+• microsoft/DeepSpeed (+410)
+
+Top Research Topics
+• cs.LG (machine learning)
+• cs.CL (natural language processing)
+
+Popular AI Tools
+• transformers
+• langchain
+
+Important AI News
+• OpenAI releases new multimodal model
+• Google announces Gemini update
+```
+
+---
+
+# Project Structure
+
+```
+ai-tech-radar
+
+collectors/
+    arxiv.py
+    news.py
+    github_repos.py
+
+ranking/
+    repos.py
+    papers.py
+    tools.py
+    trends.py
+
+ai/
+    digest.py
+
+storage/
+    db.py
+    ingest_arxiv.py
+    ingest_news.py
+    ingest_repos.py
+    generate_digest.py
+
+delivery/
+    telegram.py
+
+data/
+    digests/
+
+main.py
+README.md
+```
+
+---
+
+# Tech Stack
+
+* **Python**
+* **PostgreSQL**
+* **GitHub Actions**
+* **Telegram Bot API**
+* **arXiv API**
+* **GitHub API**
+
+Libraries used:
+
+* requests
+* feedparser
+* psycopg2
+* python-telegram-bot
+
+---
+
+# Setup
+
+### Clone Repository
+
+```
+git clone https://github.com/yourusername/ai-tech-radar.git
 cd ai-tech-radar
 ```
 
-### 2. Install Dependencies
-```bash
+---
+
+### Create Environment
+
+Using **uv**:
+
+```
+uv venv
+source .venv/bin/activate
 uv sync
 ```
 
-### 3. Configure Environment Variables
-```bash
-cp .env.example .env
-# Fill in your credentials (see section below)
+---
+
+### Configure Environment Variables
+
+Create a `.env` file:
+
+```
+GEMINI_API_KEY=your_key
+TELEGRAM_TOKEN=your_token
+CHAT_ID=your_chat_id
+DATABASE_URL=postgresql://localhost/ai_radar
 ```
 
 ---
 
-## 🔑 Environment Variables
+### Initialize Database
 
-Create a `.env` file in the root directory:
-```env
-# .env.example
-
-# Google Gemini API
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Telegram Bot
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
-TELEGRAM_CHAT_ID=your_telegram_chat_or_channel_id_here
-
-# GitHub API (optional — increases rate limits)
-GITHUB_TOKEN=your_github_personal_access_token_here
 ```
-
-For GitHub Actions, add these as **Repository Secrets** under `Settings → Secrets and variables → Actions`.
-
----
-
-## 🖥️ Running Locally
-```bash
-# Activate the virtual environment
-source .venv/bin/activate  # Linux/macOS
-# or
-.venv\Scripts\activate     # Windows
-
-# Run the full pipeline
-python main.py
-```
-
-The pipeline will collect data, generate a summary, send it to Telegram, and save the digest to `data/digests/`.
-
----
-
-## ⏱️ Automation with GitHub Actions
-
-The pipeline is defined in `.github/workflows/radar.yml` and runs automatically on a CRON schedule:
-```yaml
-on:
-  schedule:
-    - cron: '0 8 * * *'   # 08:00 UTC daily
-    - cron: '0 20 * * *'  # 20:00 UTC daily
-  workflow_dispatch:        # Manual trigger via GitHub UI
-```
-
-Each run:
-1. Checks out the repository
-2. Sets up Python with `uv`
-3. Installs dependencies
-4. Executes `main.py`
-5. Commits and pushes the generated digest back to the repository
-
-> You can also trigger a manual run anytime from the **Actions** tab in GitHub.
-
----
-
-## 📁 Repository Structure
-```
-ai-tech-radar/
-│
-├── collectors/                  # Data collection modules
-│   ├── arxiv.py                 # ArXiv RSS feed collector
-│   ├── ai_news.py               # Tech news RSS collector
-│   └── github_trending.py       # GitHub trending repo collector
-│
-├── ai/                          # AI processing layer
-│   └── summarizer.py            # Gemini AI summarization engine
-│
-├── delivery/                    # Output delivery
-│   └── telegram.py              # Telegram bot dispatcher
-│
-├── data/
-│   └── digests/                 # 📂 Historical digest archive
-│       ├── 2025-01-14.md
-│       ├── 2025-01-15.md
-│       └── ...
-│
-├── .github/
-│   └── workflows/
-│       └── radar.yml            # GitHub Actions CRON pipeline
-│
-├── main.py                      # Pipeline entry point
-├── .env.example                 # Environment variable template
-├── pyproject.toml               # Project dependencies (uv)
-└── README.md
+uv run python -m storage.init_db
 ```
 
 ---
 
-## 📋 Example Digest Output
+# Running the System
 
-Each digest is stored as a Markdown file in `data/digests/`:
-```markdown
-# AI Tech Radar — 2025-01-15
+Run the full pipeline:
 
-## 📰 Top AI News
-- OpenAI announces GPT-5 with enhanced reasoning capabilities
-- Google DeepMind releases new RL benchmark suite
-
-## 📄 ML Research Papers (ArXiv)
-- **Scaling Laws for Reward Model Overoptimization** — Gao et al.
-- **Efficient Long-Context Transformers via Sparse Attention** — MIT CSAIL
-
-## 🔥 Trending GitHub Repositories
-| Repository | Stars | Description |
-|---|---|---|
-| huggingface/transformers | ⭐ 128k | State-of-the-art ML models |
-| facebookresearch/llama | ⭐ 54k | LLaMA model inference |
-
----
-*Generated at 2025-01-15 08:00 UTC by AI Tech Radar*
+```
+uv run python main.py
 ```
 
----
+Pipeline steps:
 
-## 🔭 Future Improvements
-
-- [ ] 🌐 **Web Dashboard** — A searchable frontend to browse all historical digests
-- [ ] 🎯 **Topic Filtering** — Let users subscribe to specific AI subfields (NLP, CV, RL, etc.)
-- [ ] 📊 **Trend Analytics** — Track keyword frequency and topic trends over time
-- [ ] 🔔 **Alert System** — Notify on breakthrough papers or viral repos exceeding a threshold
-- [ ] 🗣️ **Multi-language Support** — Deliver briefings in multiple languages via Gemini
-- [ ] 📧 **Email Digest** — Add an optional email delivery channel alongside Telegram
-- [ ] 🤝 **Discord Integration** — Extend delivery to Discord servers
+1. Collect research papers
+2. Collect AI news
+3. Collect GitHub repositories
+4. Store data in PostgreSQL
+5. Analyze trends
+6. Generate intelligence digest
+7. Send Telegram notification
 
 ---
 
-## 📄 License
+# Automation
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+The system runs automatically using **GitHub Actions**.
+
+Scheduled runs:
+
+* **8:00 AM IST**
+* **6:00 PM IST**
+
+This ensures the AI intelligence report stays up to date.
 
 ---
 
-<div align="center">
+# Future Improvements
 
-Built with ☕ and curiosity about the AI frontier.
+Planned enhancements:
 
-**[⭐ Star this repo](https://github.com/ISudhan/ai-tech-radar)** if you find it useful!
+* AI-powered summarization
+* Trend scoring algorithms
+* Visualization dashboard
+* Weekly AI trend reports
+* Startup and funding tracking
 
-</div>
+---
+
+# Why This Project Matters
+
+AI Tech Radar demonstrates how to build a **modern data intelligence pipeline** combining:
+
+* data engineering
+* analytics
+* automation
+* AI summarization
+
+It showcases practical skills used in:
+
+* data platforms
+* AI infrastructure
+* research monitoring systems
+* technology intelligence tools
+
+---
+
+# License
+
+MIT License
