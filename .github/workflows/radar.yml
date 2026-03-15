@@ -2,9 +2,9 @@ name: AI Tech Radar
 
 on:
   schedule:
-    # - cron: "30 2 * * *"   # 8 AM IST
-    # - cron: "30 12 * * *"  # 6 PM IST
-    - cron: "*/5 * * * *"  
+    - cron: "30 2 * * *"   # 8 AM IST
+    - cron: "30 12 * * *"  # 6 PM IST
+    # - cron: "*/5 * * * *"  
   workflow_dispatch:
 
 jobs:
