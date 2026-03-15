@@ -2,7 +2,8 @@ CREATE TABLE papers (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     url TEXT UNIQUE NOT NULL,
-    published_date DATE,
+    published_date TIMESTAMP,
+    category TEXT,
     first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -11,17 +12,25 @@ CREATE TABLE news (
     title TEXT NOT NULL,
     url TEXT UNIQUE NOT NULL,
     source TEXT,
-    published_date DATE,
+    published_date TIMESTAMP,
     first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE repos (
+CREATE TABLE repositories (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    url TEXT UNIQUE NOT NULL,
+    name TEXT UNIQUE NOT NULL,
+    url TEXT NOT NULL,
+    description TEXT,
+    language TEXT,
+    first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE repo_stats (
+    id SERIAL PRIMARY KEY,
+    repo_id INTEGER REFERENCES repositories(id),
     stars INTEGER,
     forks INTEGER,
-    first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE digests (
