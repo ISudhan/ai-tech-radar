@@ -3,7 +3,7 @@ from datetime import datetime
 
 from collectors.github_trending import get_repos
 from collectors.arxiv import get_papers
-from collectors.ai_news import get_news
+from collectors.news import get_news
 
 from ai.summarizer import summarize
 from delivery.telegram import send_message
