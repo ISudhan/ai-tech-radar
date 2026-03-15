@@ -1,6 +1,6 @@
 from ranking.trends import generate_trends
 from storage.db import get_connection
-
+from prediction.trends import predict_trending
 
 def get_latest_news(limit=5):
 
@@ -45,5 +45,11 @@ def build_digest():
     message += "\n📰 Important AI News\n"
     for article in news:
         message += f"• {article}\n"
+    predictions = predict_trending()
+
+    message += "\n🔮 Predicted Trending Repositories\n"
+
+    for repo, stars in predictions:
+        message += f"• {repo} → predicted {stars} stars\n"
 
     return message
